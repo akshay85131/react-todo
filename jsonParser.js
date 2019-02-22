@@ -39,7 +39,8 @@ function numberParser (value) {
 function stringParser (input) {
   // let token;
   input = removeSpace(input)
-  if (token = /^"([^"]*)"/.exec(input)) {
+  token = /^"([^"]*)"/.exec(input)
+  if (token) {
     return { token: token[1], rest: input.slice(token[0].length) }
   }
   return null
@@ -66,23 +67,28 @@ function arrayParser (input) {
 
 function jsonParser (input) {
   let match
-  if (match = numberParser(input)) {
+  match = numberParser(input)
+  if (match) {
     if (match.rest === '') { return match.token }
     return match
   }
-  if (match = stringParser(input)) {
+  match = stringParser(input)
+  if (match) {
     if (match.rest === '') { return match.token }
     return match
   }
-  if (match = boolParser(input)) {
+  match = boolParser(input)
+  if (match) {
     if (match.rest === '') { return match.token }
     return match
   }
-  if (match = nullParser(input)) {
+  match = nullParser(input)
+  if (match) {
     if (match.rest === '') { return match.token }
     return match
   }
-  if (match = arrayParser(input)) {
+  match = arrayParser(input)
+  if (match) {
     if (match.rest === '') { return match.token }
     return match
   }
