@@ -5,103 +5,106 @@ function removeSpace (input) {
   }
   return input.slice(first)
 }
-let token
-function nullParser (input) {
-  let str1 = input.indexOf(null)
-  //   console.log(str1)
-  // var token;
-  if (str1 === 0) {
-    return { token: null, rest: input.slice(4, str1.length) }
-  } else return null
+
+function nullParser (value) {
+  if (value.startsWith('null')) {
+    return [null, value.slice(4, value.length)]
+  } return null
 }
+// console.log(nullParser('null124'))
 
 function boolParser (value) {
-  // var token
-  if (value.indexOf(true) === 0) {
-    return { token: true, rest: value.slice(4, value.length) }
+  if (value.startsWith('true')) {
+    return [true, value.slice(4, value.length)]
   }
-  if (value.indexOf(false) === 0) {
-    return { token: false, rest: value.slice(5, value.length) }
-  } else {
+  if (value.startsWith('false')) { return [false, value.slice(5, value.length)] } else {
     return null
   }
 }
 
 function numberParser (value) {
-  // let token;
+  // ^[+-]?([0-9]*\.?[0-9]+|[0-9]+\.?[0-9]*)([eE][+-]?[0-9]+)?/
   let expression = /^[+-]?([0-9]*\.?[0-9]+|[0-9]+\.?[0-9]*)([eE][+-]?[0-9]+)?/
+  // /^[+-]?([0-9]*)([eE]?[0-9]+)?/
   let result = value.match(expression)
   // console.log(result)
-  if (result !== null) return { token: (result[0]) * 1, rest: value.slice(result[0].length, value.length) }
+  if (result !== null) return [parseInt(result[0]), value.slice(result[0].length, value.length)]
   else return null
 }
 
 function stringParser (input) {
   // let token;
   input = removeSpace(input)
-  token = /^"([^"]*)"/.exec(input)
-  if (token) {
-    return { token: token[1], rest: input.slice(token[0].length) }
+  let result = /^("[^"]*")/.exec(input)
+  if (result) {
+    return [result[1], input.slice(result[0].length)]
   }
   return null
 }
+// console.log(stringParser('"asdas",555,true]'))
 
+function valueParser (str) {
+  let parserArr = [nullParser, boolParser, numberParser, stringParser, arrayParser, objectParser]
+  for (let parser of parserArr) {
+    let result = parser(str)
+    if (result !== null) return result
+  }
+  return null
+}
 function arrayParser (input) {
-  var ar, match
+  if (!input.startsWith('[')) { return null }
+  input = input.slice(1)
   input = removeSpace(input)
-  if (/^\[/.test(input)) {
-    ar = []
-    input = input.slice(1)
-    while (input[0] !== ']') {
-      input = removeSpace(input)
-      if (input[0] === ',') { input = input.slice(1) }
-      match = jsonParser(input)
-      ar.push(match.token)
-      input = removeSpace(match.rest)
+  let ar = []
+  while (input[0] !== ']') {
+    input = removeSpace(input)
+    let result = valueParser(input)
+    if (result === null) { return null }
+    ar.push(result[0])
+    // console.log(result)
+    input = result[1]
+    if (input[0] === ',') {
+      result = input.slice(1)
+      input = removeSpace(result)
+    } else if (input[0] !== ']') return null
+    else { input = result[1] }
+  }
+  return [ar, input.slice(1)]
+}
+
+// console.log(arrayParser('[[1],[1,2][null,true]]'))
+
+function objectParser (input) {
+  // console.log(input)
+  if (!input[0].startsWith('{')) { return null }
+  input = input.slice(1)
+  console.log(input)
+  let obj = {}
+  let key, value
+  while (input[0] !== '}') {
+    input = removeSpace(input)
+    // console.log(input)
+    key = stringParser(input)
+    // console.log(key[0])
+    if (key === null) return null
+    input = key[1]
+    input = removeSpace(input)
+    if (input[0] === ':') {
+      input = input.slice(1)
     }
-    let arr = { token: ar, rest: input.slice(1) }
-    return [arr.token, arr.rest]
+    input = removeSpace(input)
+    value = valueParser(input)
+    if (value === null) return null
+    // value = value.slice(1)
+    input = value[1]
+    // input = removeSpace(value)
+    obj[key[0]] = value[0]
+    if (input[0] === ',') {
+      input = input.slice(1)
+      input = removeSpace(input)
+    } else if (input[0] !== '}') return null
+    else { input = value[1] }
   }
-  return null
+  return [obj, input.slice(1)]
 }
-
-function jsonParser (input) {
-  let match
-  match = numberParser(input)
-  if (match) {
-    if (match.rest === '') { return match.token }
-    return match
-  }
-  match = stringParser(input)
-  if (match) {
-    if (match.rest === '') { return match.token }
-    return match
-  }
-  match = boolParser(input)
-  if (match) {
-    if (match.rest === '') { return match.token }
-    return match
-  }
-  match = nullParser(input)
-  if (match) {
-    if (match.rest === '') { return match.token }
-    return match
-  }
-  match = arrayParser(input)
-  if (match) {
-    if (match.rest === '') { return match.token }
-    return match
-  }
-  //   if (match = objectParser(input)) {
-  //     if (match.rest === '') { return match.token }
-  //     return match
-  //   }
-  return null
-}
-
-// console.log(valueParser('["vng",5465]'))
-// console.log(stringParser('""'))
-console.log(arrayParser('["dasfas","sa",5555,"558999",true]'))
-// console.log(number('-45.6e3'))
-// // console.log(bool('true'))
-// console.log(nullParser('null'))
+console.log(objectParser('{"sf":44,"ak":[1,2]}'))
