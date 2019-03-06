@@ -1,5 +1,5 @@
-var fs = require('fs')
-let data1 = fs.readFileSync('./redit.json').toString()
+// var fs = require('fs')
+// let data1 = fs.readFileSync('./redit.json').toString()
 
 function removeSpace (input) {
   var first = input.search(/\S/)
@@ -25,13 +25,14 @@ function boolParser (value) {
 }
 
 function numberParser (value) {
-  let expression = /^[+-]?([0-9]*\.?[0-9]+|[0-9]+\.?[0-9]*)([eE][+-]?[0-9]+)?/
+  let expression = /^[-]?[0-9]+(\.[0-9]+(?:[Ee][+-]?[0-9]+)?)?/
+  //  /^[+-]?([0-9]*\.?[0-9]+|[0-9]+\.?[0-9]*)([eE][+-]?[0-9]+)?/
   let result = value.match(expression)
   if (result !== null) return [parseInt(result[0]), value.slice(result[0].length, value.length)]
   else return null
 }
 function stringParser (input) {
-  input = removeSpace(input)
+  // input = removeSpace(input)
   let result = /^"(([^"\\]|\\["/\\bfnrt]|\\u[a-fA-F0-9]{4})*)"/.exec(input)
   if (result) {
     return [result[1], input.slice(result[0].length)]
@@ -39,14 +40,14 @@ function stringParser (input) {
   return null
 }
 
-function valueParser (str) {
-  let parserArr = [nullParser, boolParser, numberParser, stringParser, arrayParser, objectParser]
-  for (let parser of parserArr) {
-    let result = parser(str)
-    if (result !== null) return result
-  }
-  return null
-}
+// function valueParser (str) {
+//   let parserArr = [nullParser, boolParser, numberParser, stringParser, arrayParser, objectParser]
+//   for (let parser of parserArr) {
+//     let result = parser(str)
+//     if (result !== null) return result
+//   }
+//   return null
+// }
 function arrayParser (input) {
   if (!input.startsWith('[')) { return null }
   input = input.slice(1)
@@ -101,7 +102,7 @@ function objectParser (input) {
 
 /// Factory parser////
 
-function factoryParser (parsers) {
+function factoryParser (...parsers) {
   return function parse (data1) {
     for (let parser of parsers) {
       if (parser(data1) !== null) {
@@ -111,5 +112,5 @@ function factoryParser (parsers) {
     return null
   }
 }
-let allParser = factoryParser([nullParser, boolParser, numberParser, stringParser, arrayParser, objectParser])(data1)
-console.log(JSON.stringify(allParser))
+// let valueParser = factoryParser(nullParser, boolParser, numberParser, stringParser, arrayParser, objectParser)
+// console.log(JSON.stringify(valueParser(data1)))
