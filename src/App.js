@@ -7,24 +7,69 @@ import uuid from "uuid";
 
 class App extends Component {
   state = {
+    filterTodos: [],
+    currentSelected:"All",
     todos: [
       {
         id: uuid.v4(),
         title: "complete all work on focus hours",
-        completed: false
+        completed: false,
+        note :"ads",
+        isHidden: true,
+        displayNotes: "none"
       },
-      { id: uuid.v4(), title: "take rest", completed: false }
+      {
+        id: uuid.v4(),
+        title: "take rest",
+        completed: false,
+        note : "all ok",
+        isHidden: true,
+        displayNotes: "none"
+      }
     ]
   };
 
+  changeCurrentSelected = newTab => {
+    this.setState({
+      currentSelected: newTab
+    })
+    this.filter(newTab)
+  }
+
+  filter(newTab){
+    if(newTab === 'All'){
+      this.setState({filterTodos:this.state.todos})
+    }
+    else if(newTab === 'Completed'){
+     let completedTodo= this.state.todos.filter(item=>item.completed ===true)
+     this.setState({filterTodos:completedTodo})
+    }
+    else {
+      let InCompletedTodo= this.state.todos.filter(item=>item.completed ===false)
+      this.setState({filterTodos:InCompletedTodo})
+     }
+    
+
+  }
   addTodo = title => {
     const newTodo = {
       id: uuid.v4(),
       title,
-      completed: false
+      completed: false,
+      note: '',
+      isHidden: true,
+      displayNotes: "none"
     };
+
     this.setState({ todos: [...this.state.todos, newTodo] });
+     setTimeout( () =>{
+this.filter(this.state.currentSelected)
+     },0)
   };
+
+  componentDidMount(){
+    this.setState({filterTodos:this.state.todos})
+  }
 
   markComplete = id => {
     this.setState({
@@ -35,29 +80,26 @@ class App extends Component {
         return todo;
       })
     });
+    this.filter(this.state.currentSelected)
   };
 
   delTodo = id => {
     this.setState({
       todos: [...this.state.todos.filter(todo => todo.id !== id)]
     });
+    this.filter(this.state.currentSelected)
   };
-  // editTodo = id =>{
-    
-  // }
 
-  // console.log(this.state.todos)
   render() {
     return (
       <div className="App">
         <div className="container">
-          <Header />
+          <Header  changeTab= {this.changeCurrentSelected}/>
           <AddTodo addTodo={this.addTodo} />
           <Todos
-            todos={this.state.todos}
+            todos={this.state.filterTodos}
             markComplete={this.markComplete}
             delTodo={this.delTodo}
-            // editTodo={this.editTodo}
           />
         </div>
       </div>
