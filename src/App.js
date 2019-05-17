@@ -29,28 +29,6 @@ class App extends Component {
     ]
   };
 
-  changeCurrentSelected = newTab => {
-    this.setState({
-      currentSelected: newTab
-    })
-    this.filter(newTab)
-  }
-
-  filter(newTab){
-    if(newTab === 'All'){
-      this.setState({filterTodos:this.state.todos})
-    }
-    else if(newTab === 'Completed'){
-     let completedTodo= this.state.todos.filter(item=>item.completed ===true)
-     this.setState({filterTodos:completedTodo})
-    }
-    else {
-      let InCompletedTodo= this.state.todos.filter(item=>item.completed ===false)
-      this.setState({filterTodos:InCompletedTodo})
-     }
-    
-
-  }
   addTodo = title => {
     const newTodo = {
       id: uuid.v4(),
@@ -61,14 +39,16 @@ class App extends Component {
       displayNotes: "none"
     };
 
-    this.setState({ todos: [...this.state.todos, newTodo] });
-     setTimeout( () =>{
-this.filter(this.state.currentSelected)
-     },0)
-  };
+    this.setState({ todos: [...this.state.todos, newTodo]}, ()=>{
+       this.filter(this.state.currentSelected)
+      }
+    );
+  }
+     
 
   componentDidMount(){
     this.setState({filterTodos:this.state.todos})
+    
   }
 
   markComplete = id => {
@@ -79,16 +59,46 @@ this.filter(this.state.currentSelected)
         }
         return todo;
       })
-    });
-    this.filter(this.state.currentSelected)
+    }, ()=>{
+      this.filter(this.state.currentSelected)
+     });
+    
   };
 
   delTodo = id => {
     this.setState({
       todos: [...this.state.todos.filter(todo => todo.id !== id)]
-    });
-    this.filter(this.state.currentSelected)
+    }, ()=>{
+      this.filter(this.state.currentSelected)
+     });
+   
   };
+
+
+  changeCurrentSelected = newTab => {
+    this.setState({
+      currentSelected: newTab
+    }, ()=>{
+      this.filter(this.state.currentSelected)
+     })
+  }
+
+  filter(newTab){
+    if(newTab === 'All'){
+      this.setState({filterTodos:this.state.todos})
+    }
+    else if(newTab === 'Completed'){
+     let completedTodo= this.state.todos.filter(item=>item.completed ===true)
+     console.log(completedTodo)
+     this.setState({filterTodos:completedTodo})
+    }
+    else {
+      let InCompletedTodo= this.state.todos.filter(item=>item.completed ===false)
+      this.setState({filterTodos:InCompletedTodo})
+     }
+    
+
+  }
 
   render() {
     return (

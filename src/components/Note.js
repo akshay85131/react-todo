@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import '/home/akshay/Documents/Geekskool/react/todo/src/App.css'
 
  class Note extends Component {
     constructor(props){
