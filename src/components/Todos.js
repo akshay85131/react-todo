@@ -12,6 +12,7 @@ class Todos extends Component {
         todo={todo}
         markComplete={this.props.markComplete}
         delTodo={this.props.delTodo}
+        saveTitle={this.props.saveTitle}
       />
     ));
   }

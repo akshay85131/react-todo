@@ -111,14 +111,15 @@ a {
 textarea {
  position: relative;
  left:35%;
-  height: 1em;
+  /* height: 1em; */
   width: 25%;
   padding: 3px;
   resize: none;
   overflow: auto;
   transition: all 0.5s ease;
-}
-
-textarea:focus {
   height: 4em;
 }
+
+/* textarea:focus {
+  height: 4em;
+} */

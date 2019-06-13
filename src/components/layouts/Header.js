@@ -1,7 +1,7 @@
 // import React from "react";
 
 import React, { Component } from 'react'
-import '/home/akshay/Documents/Geekskool/react/todo/src/App.css'
+import '../../../src/App.css'
 
  class Header extends Component {
    changeTab=(filterType)=>{

@@ -8,29 +8,39 @@ export class TodoItem extends Component {
     return {
       background: "#f4f4f4",
       padding: "10px",
+      resize: "both",
       borderBottom: "1px #ccc dotted",
       textDecoration: this.props.todo.completed ? "line-through" : "none"
     };
   };
-  constructor() {
-    super();
-    this.state = { editing: false, showNote: false };
+  constructor(props) {
+    super(props);
+    this.state = { editing: false, showNote: false,changedText:this.props.todo.title };
   }
-  componentDidMount() {
-    this.setState({ changedText: this.props.todo.title });
-  }
+  // componentDidMount() {
+  //   this.setState({ changedText: this.props.todo.title });
+  // }
   handleEditing(event) {
-    let changedText = event.target.value;
-    this.setState({ editing: true, changedText: this.state.changedText });
+    
+    this.setState({ editing: true,  changedText: event.target.value});
+
+    // this.setState({ editing: true });
   }
   handleEditingDone(event) {
     if (event.keyCode === 13) {
-      this.setState({ editing: false });
-    }
+      this.setState({ editing: false })
+    
+      const id = this.props.todo.id;
+    const newtext = {
+      title:this.state.changedText,
+      id
+    };
+    this.props.saveTitle(newtext);
+    // this.setState({ editing: false })
+  }
   }
   handleEditingChange(event) {
-    let changedText = event.target.value;
-    this.setState({ changedText: changedText });
+    this.setState({ changedText : event.target.value });
   }
 
   handleNote(e) {
@@ -76,8 +86,9 @@ export class TodoItem extends Component {
             type="text "
             style={editStyle}
             value={this.state.changedText}
-            onKeyDown={this.handleEditingDone.bind(this)}
             onChange={this.handleEditingChange.bind(this)}
+            onKeyDown={this.handleEditingDone.bind(this)}
+           
           />
         </p>
       </div>

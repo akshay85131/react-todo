@@ -8,11 +8,11 @@ export class AddTodo extends Component {
 
   onSubmit = e => {
     e.preventDefault();
-    if(this.state.title.length>0){
-    this.props.addTodo(this.state.title);
-    this.setState({ title: "" });}
-    else{
-      alert('enter valid name')
+    if (this.state.title.length > 0) {
+      this.props.addTodo(this.state.title);
+      this.setState({ title: "" });
+    } else {
+      alert("enter valid name");
     }
   };
 
@@ -20,10 +20,7 @@ export class AddTodo extends Component {
 
   render() {
     return (
-      <form
-        onSubmit={this.onSubmit}
-        style={{ display: "flex" }}
-      >
+      <form onSubmit={this.onSubmit} style={{ display: "flex" }}>
         <input
           type="text"
           name="title"
